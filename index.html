@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Príncipe e o Mendigo | Mark Twain</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Georgia', 'Arial', sans-serif; }
+        html { overflow: hidden; }
+        body {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #0f0f23;
+            color: #fff;
+        }
+
+        /* CONTEÚDO DOS SLIDES — DESLIZA HORIZONTALMENTE */
+        .capa-apresentacao {
+            display: flex;
+            width: 800%; /* 8 slides = 8x100% */
+            height: 100vh;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* FUNDO TEMÁTICO DE CADA PÁGINA 🎨 */
+        .fundo {
+            position: absolute; inset: 0;
+            background-size: cover; background-position: center;
+            filter: brightness(0.35) saturate(1.2);
+            z-index: 0;
+        }
+        .s1 .fundo { background: linear-gradient(135deg, #2c1a47, #1a1a30); }
+        .s2 .fundo { background: linear-gradient(135deg, #1a2c47, #2a3a5c); }
+        .s3 .fundo { background: linear-gradient(135deg, #4a3828, #7a6048); }
+        .s4 .fundo { background: linear-gradient(135deg, #204030, #3a6050); }
+        .s5 .fundo { background: linear-gradient(135deg, #5a3820, #8a6030); }
+        .s6 .fundo { background: linear-gradient(135deg, #3a2a50, #6a5080); }
+        .s7 .fundo { background: linear-gradient(135deg, #203050, #406090); }
+        .s8 .fundo { background: linear-gradient(135deg, #1a1a2e, #303050); }
+
+        /* Padrões sutis para dar textura de ilustração do livro */
+        .fundo::after {
+            content: '';
+            position: absolute; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.6;
+        }
+
+        /* CARTÃO DE CONTEÚDO */
+        .conteudo {
+            position: relative; z-index: 1;
+            max-width: 900px; width: 100%;
+            background: rgba(10, 10, 30, 0.75);
+            backdrop-filter: blur(10px);
+            padding: 3rem; border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+            opacity: 0; transform: translateY(30px);
+            animation: entrada 0.8s forwards; animation-delay: 0.3s;
+        }
+        @keyframes entrada {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* TIPOGRAFIA */
+        h1 { font-size: 3rem; margin-bottom: 1rem; color: #ffd700; text-shadow: 0 0 20px rgba(255,215,0,0.3); }
+        h2 { font-size: 2.2rem; margin-bottom: 1.5rem; color: #ffd700; border-bottom: 2px solid rgba(255,215,0,0.3); padding-bottom: 0.5rem; }
+        h3 { font-size: 1.4rem; color: #ffeb80; margin-bottom: 0.8rem; }
+        p, li { font-size: 1.15rem; line-height: 1.8; margin-bottom: 0.7rem; color: #e0e0e0; }
+        ul { list-style: none; padding-left: 0; }
+        li::before { content: '✦'; color: #ffd700; margin-right: 0.8rem; }
+        .destaque { font-size: 1.3rem; color: #ffd700; margin: 1.5rem 0; font-style: italic; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem; }
+        .card-personagem {
+            background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px;
+            border-left: 3px solid #ffd700; transition: transform 0.3s;
+        }
+        .card-personagem:hover { transform: translateY(-5px); background: rgba(255,255,255,0.08); }
+
+        /* NAVEGAÇÃO */
+        .navegacao {
+            position: fixed; bottom: 3rem; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 1rem; z-index: 100;
+        }
+        .nav-btn {
+            width: 50px; height: 50px; border-radius: 50%; border: 2px solid #ffd700;
+            background: transparent; color: #ffd700; font-weight: bold; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .nav-btn.ativo { background: #ffd700; color: #000; box-shadow: 0 0 15px rgba(255,215,0,0.5); }
+        .nav-btn:hover { background: #ffd700; color: #000; transform: scale(1.1); }
+        .seta {
+            position: fixed; top: 50%; transform: translateY(-50%);
+            width: 60px; height: 60px; border-radius: 50%; border: none;
+            background: rgba(255,215,0,0.9); color: #000; font-size: 1.5rem;
+            cursor: pointer; z-index: 100; transition: all 0.3s;
+        }
+        .seta:hover { transform: translateY(-50%) scale(1.15); box-shadow: 0 0 20px rgba(255,215,0,0.6); }
+        .esq { left: 2rem; }
+        .dir { right: 2rem; }
+
+        /* RESPONSIVO */
+        @media (max-width: 768px) {
+            .conteudo { padding: 2rem; }
+            h1 { font-size: 2rem; } h2 { font-size: 1.6rem; }
+            .grid { grid-template-columns: 1fr; }
+            .seta { width: 45px; height: 45px; font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Botões de navegação laterais -->
+<button class="seta esq" id="btnEsq">◀</button>
+<button class="seta dir" id="btnDir">▶</button>
+
+<!-- Indicadores de página -->
+<div class="navegacao">
+    <button class="nav-btn ativo" data-pag="0">1</button>
+    <button class="nav-btn" data-pag="1">2</button>
+    <button class="nav-btn" data-pag="2">3</button>
+    <button class="nav-btn" data-pag="3">4</button>
+    <button class="nav-btn" data-pag="4">5</button>
+    <button class="nav-btn" data-pag="5">6</button>
+    <button class="nav-btn" data-pag="6">7</button>
+    <button class="nav-btn" data-pag="7">8</button>
+</div>
+
+<!-- ÁREA DE SLIDES → DESLIZA PRO LADO -->
+<div class="capa-apresentacao" id="apresentacao">
+
+    <!-- 1 — CAPA -->
+    <section class="slide s1">
+        <div class="fundo"></div>
+        <div class="conteudo" style="text-align: center; background: rgba(10,10,30,0.6);">
+            <h1>👑 O Príncipe e o Mendigo 🧹</h1>
+            <p style="font-size: 1.3rem; color: #ccc; margin-bottom: 1rem;">Uma obra de Mark Twain</p>
+            <p class="destaque">"Não julgues ninguém pelas roupas que veste"</p>
+            <p style="margin-top: 2rem; opacity: 0.7;">Use as setas ou os botões para navegar →</p>
+        </div>
+    </section>
+
+    <!-- 2 — O AUTOR -->
+    <section class="slide s2">
+        <div class="fundo"></div>
+        <div class="conteudo">
+            <h2>✍️ Sobre o Autor</h2>
+            <ul>
+                <li><strong>Nome verdadeiro:</strong> Samuel Langhorne Clemens — conhecido pelo pseudônimo Mark Twain 🇺🇸</li>
+                <li><strong>Período:</strong> 1835 – 1910, nascido nos Estados Unidos</li>
+                <li><strong>Vida variada:</strong> Trabalhou como piloto de barco no Rio Mississippi, jornalista, tipógrafo e viajante</li>
+                <li><strong>Obras famosas:</strong> <em>As Aventuras de Tom Sawyer</em>, <em>Huckleberry Finn</em> e <em>O Príncipe e o Mendigo</em></li>
+                <li><strong>Estilo:</strong> Humor afiado, crítica social e amor pelo povo — considerado um dos maiores escritores americanos</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 3 — PERSONAGENS -->
+    <section class="slide s3">
+        <div class="fundo"></div>
+        <div class="conteudo">
+            <h2>👥 Os Dois Protagonistas</h2>
+            <div class="grid">
+                <div class="card-personagem">
+                    <h3>👑 Eduardo Tudor</h3>
+                    <p>Príncipe da Inglaterra, herdeiro do trono.</p>
+                    <p>Vive cercado de riquezas, servos e regras rígidas.</p>
+                    <p>Mas sente-se solitário e sem liberdade.</p>
+                </div>
+                <div class="card-personagem">
+                    <h3>🧹 Tom Canty</h3>
+                    <p>Menino nascido na pobreza, mora numa rua miserável de Londres.</p>
+                    <p>Sonha com um mundo diferente, mas passa fome e frio.</p>
+                    <p>É bondoso, inteligente e sonhador.</p>
+                </div>
+            </div>
+            <p class="destaque" style="text-align: center;">✨ Eles são fisicamente idênticos — ninguém consegue distingui-los! ✨</p>
+        </div>
+    </section>
+
+    <!-- 4 — O ENCONTRO E A TROCA -->
+    <section class="slide s4">
+        <div class="fundo"></div>
+        <div class="conteudo">
+            <h2>🔄 O Encontro e a Troca</h2>
+            <ul>
+                <li>Tom, curioso e sonhador, aproxima-se dos portões do palácio real e é empurrado pelos guardas.</li>
+                <li>Eduardo o vê, se compadece e o convida a entrar.</li>
+                <li>Os dois conversam e ficam espantados: têm a mesma aparência, idades parecidas, mas vidas opostas.</li>
+                <li>Surgiu a ideia brincalhona: <strong>trocar de roupa e experimentar a vida um do outro por um dia.</strong></li>
+                <li>Mas Eduardo, ao sair, é afastado do palácio e não consegue voltar — a brincadeira vira realidade!</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 5 — EDUARDO NO MUNDO REAL -->
+    <section class="slide s5">
+        <div class="fundo"></div>
+        <div class="conteudo">
+            <h2>🏙️ Eduardo Descobre a Realidade</h2>
+            <ul>
+                <li>Com roupas pobres, ninguém acredita que é o príncipe — todos o chamam de louco e zombam dele.</li>
+                <li>Conhece a fome, o frio, a violência e a injustiça que atingem o povo comum.</li>
+                <li>Convive com a família de Tom e presencia a miséria de perto.</li>
+                <li>Descobre que as leis nem sempre são justas e que muitos sofrem sem merecer.</li>
+                <li class="destaque">💡 <strong>Lição:</strong> O palácio escondia dele a verdadeira vida. Agora ele entende o que é o povo.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 6 — TOM NO TRONO -->
+    <section class="slide s6">
+        <div class="fundo"></div>
+        <div class="conteudo">
+            <h2>👑 Tom no Lugar do Príncipe</h2>
+            <ul>
+                <li>No palácio, todos acreditam que ele enlouqueceu: não sabe regras, não reconhece ninguém, erra tudo.</li>
+                <li>Tem comida farta, roupas nobres e servos, mas sente-se perdido e preso.</li>
+                <li>Descobre que riqueza não é o mesmo que felicidade — e que a liberdade vale mais que ouro.</li>
+                <li>Com o tempo, começa a tomar decisões justas, pensando nos mais pobres.</li>
+                <li class="destaque">💡 <strong>Lição:</strong> Ter poder traz responsabilidade — e Tom começa a exercê-la com bondade.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 7 — RESOLUÇÃO E AMIZADE -->
+    <section class="slide s7">
+        <div class="fundo"></div>
+        <div class="conteudo">
+            <h2>🤝 Reencontro e Justiça</h2>
+            <ul>
+                <li>Após grandes perigos e provações, os dois se reencontram.</li>
+                <li>Eduardo prova sua identidade e reassume o trono como rei da Inglaterra.</li>
+                <li>Tom é acolhido com dignidade e respeito, tornando-se amigo fiel do rei.</li>
+                <li>Eduardo governa com justiça e compaixão — porque conheceu a vida do povo de perto.</li>
+                <li>Uma amizade improvável nasce e dura para sempre: um rei e um menino que mudaram a vida um do outro.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 8 — LIÇÕES FINAIS -->
+    <section class="slide s8">
+        <div class="fundo"></div>
+        <div class="conteudo" style="text-align: center;">
+            <h2>💎 Lições que Ficam</h2>
+            <ul style="text-align: left; max-width: 600px; margin: 0 auto 2rem;">
+                <li><strong>Aparências enganam:</strong> o valor de uma pessoa não está nas roupas ou no título.</li>
+                <li><strong>Empatia:</strong> só entendemos alguém quando vivemos a sua realidade.</li>
+                <li><strong>Justiça:</strong> governar é servir, não só mandar.</li>
+                <li><strong>Amizade:</strong> pode nascer entre mundos diferentes e mudar tudo.</li>
+                <li><strong>Bondade:</strong> vale mais que riquezas e dura para sempre.</li>
+            </ul>
+            <p class="destaque">Obrigada pela atenção! 🙌</p>
+        </div>
+    </section>
+
+</div>
+
+<script>
+let paginaAtual = 0;
+const totalPaginas = 8;
+const apresentacao = document.getElementById('apresentacao');
+const botoes = document.querySelectorAll('.nav-btn');
+
+function atualizarPagina() {
+    // Move os slides pro lado
+    apresentacao.style.transform = `translateX(-${paginaAtual * 100}vw)`;
+    // Ativa botão correto
+    botoes.forEach((btn, i) => btn.classList.toggle('ativo', i === paginaAtual));
+}
+
+// Botões de seta
+document.getElementById('btnEsq').addEventListener('click', () => {
+    if (paginaAtual > 0) { paginaAtual--; atualizarPagina(); }
+});
+document.getElementById('btnDir').addEventListener('click', () => {
+    if (paginaAtual < totalPaginas - 1) { paginaAtual++; atualizarPagina(); }
+});
+
+// Botões numéricos
+botoes.forEach(btn => {
+    btn.addEventListener('click', () => {
+        paginaAtual = parseInt(btn.dataset.pag);
+        atualizarPagina();
+    });
+});
+
+// Navegação pelo teclado ⬅ ➡
+document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft' && paginaAtual > 0) { paginaAtual--; atualizarPagina(); }
+    if (e.key === 'ArrowRight' && paginaAtual < totalPaginas - 1) { paginaAtual++; atualizarPagina(); }
+});
+</script>
+</body>
+</html>
